@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2563a8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>骨質不鬆懈 健康不鬆手</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root{
+    --main:#2563a8; --main-dark:#1c4a80; --accent:#f59e0b;
+    --bg:#eef4fa; --card:#ffffff; --text:#22303e; --muted:#6b7d90;
+    --ok:#1e7d4f; --bad:#c0392b;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html,body{ height:100%; }
+  body{
+    font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+    background:var(--bg); color:var(--text);
+    max-width:520px; margin:0 auto; min-height:100dvh;
+    display:flex; flex-direction:column;
+  }
+  /* ---------- Header ---------- */
+  header{
+    background:linear-gradient(135deg,var(--main),#3b82c4);
+    color:#fff; padding:22px 20px 18px; position:sticky; top:0; z-index:10;
+    box-shadow:0 2px 10px rgba(37,99,168,.25);
+  }
+  header h1{ font-size:1.25rem; letter-spacing:1px; }
+  header p{ font-size:.8rem; opacity:.85; margin-top:4px; }
+  .hero-emoji{ font-size:1.6rem; }
+  /* ---------- Pages ---------- */
+  main{ flex:1; padding:16px 16px calc(80px + var(--safe-bottom)); }
+  .page{ display:none; animation:fade .25s ease; }
+  .page.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+  /* ---------- Cards ---------- */
+  .card{
+    background:var(--card); border-radius:16px; padding:16px;
+    margin-bottom:14px; box-shadow:0 2px 8px rgba(30,60,100,.08);
+  }
+  .card h2{ font-size:1.05rem; color:var(--main-dark); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+  .card p{ font-size:.95rem; line-height:1.7; color:var(--text); }
+  .card li{ font-size:.95rem; line-height:1.8; margin-left:1.2em; color:var(--text); }
+  .badge{ display:inline-block; background:var(--accent); color:#fff; font-size:.7rem; padding:3px 10px; border-radius:20px; margin-bottom:10px; font-weight:bold; }
+  .read-hint{
+    display:flex; justify-content:space-between; align-items:center;
+    background:#fff8e6; border:1px dashed #e6c15a; border-radius:12px;
+    padding:10px 14px; margin-bottom:14px; font-size:.85rem; color:#8a6100;
+  }
+  .read-dot{ font-weight:bold; }
+  .read-dot.done{ color:var(--ok); }
+  /* ---------- Danger / OK lists ---------- */
+  .factor{ display:flex; gap:12px; margin-bottom:14px; }
+  .factor .col{ flex:1; border-radius:14px; padding:14px; }
+  .factor h3{ font-size:.9rem; margin-bottom:8px; text-align:center; }
+  .factor li{ font-size:.85rem; line-height:1.7; margin-left:1em; }
+  .col.bad{ background:#fdecec; } .col.bad h3{ color:var(--bad); }
+  .col.good{ background:#e8f5ee; } .col.good h3{ color:var(--ok); }
+  .col.warn{ background:#fff6e5; } .col.warn h3{ color:#b26a00; }
+  /* ---------- Citations (前注法) ---------- */
+  .cite{ font-size:.76rem; color:var(--muted); line-height:1.6; margin-top:6px; }
+  /* ---------- Sources ---------- */
+  .src-list{ margin-left:1.2em; }
+  .src-list li{ font-size:.82rem; line-height:1.7; margin-bottom:8px; color:var(--text); word-break:break-all; }
+  .src-list a{ color:var(--main); font-weight:bold; text-decoration:none; white-space:nowrap; }
+  .src-list a:active{ opacity:.7; }
+  /* ---------- Steps ---------- */
+  .step{ display:flex; gap:12px; margin-bottom:14px; }
+  .step .num{
+    flex:0 0 36px; height:36px; border-radius:50%; background:var(--main); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:1rem;
+  }
+  .step .body{ flex:1; background:var(--card); border-radius:14px; padding:12px 14px; box-shadow:0 2px 6px rgba(30,60,100,.08); }
+  .step .body b{ color:var(--main-dark); font-size:.95rem; }
+  .step .body p{ font-size:.87rem; color:var(--muted); margin-top:3px; line-height:1.6; }
+  /* ---------- Locked screen ---------- */
+  .lock-card{ text-align:center; padding:28px 18px; }
+  .lock-card .lock-ico{ font-size:2.6rem; }
+  .lock-card h2{ justify-content:center; }
+  .checklist{ text-align:left; margin:16px 0; }
+  .check-item{
+    display:flex; align-items:center; gap:10px; background:#f2f6fa;
+    border-radius:12px; padding:12px 14px; margin-bottom:10px; font-size:.92rem;
+  }
+  .check-item .st{ margin-left:auto; font-size:.85rem; color:var(--muted); white-space:nowrap; }
+  .check-item.done{ background:#e8f5ee; }
+  .check-item.done .st{ color:var(--ok); font-weight:bold; }
+  .agree-row{
+    display:flex; align-items:flex-start; gap:10px; text-align:left;
+    background:#f2f6fa; border-radius:12px; padding:12px 14px; font-size:.9rem; line-height:1.6;
+  }
+  .agree-row input{ width:20px; height:20px; accent-color:var(--main); flex:0 0 auto; margin-top:2px; }
+  .btn-start{
+    display:block; width:100%; margin-top:14px; padding:14px; border:none; border-radius:14px;
+    background:var(--main); color:#fff; font-size:1rem; font-weight:bold; font-family:inherit; cursor:pointer;
+  }
+  .btn-start:disabled{ background:#b9c9da; cursor:not-allowed; }
+  .btn-start:not(:disabled){ box-shadow:0 4px 12px rgba(37,99,168,.35); }
+  /* ---------- Quiz ---------- */
+  .quiz-q{ background:var(--card); border-radius:16px; padding:16px; margin-bottom:14px; box-shadow:0 2px 8px rgba(30,60,100,.08); }
+  .quiz-q .q{ font-size:.98rem; font-weight:bold; margin-bottom:12px; line-height:1.6; }
+  .opt{
+    display:block; width:100%; text-align:left; background:#f2f6fa; border:2px solid transparent;
+    border-radius:12px; padding:11px 14px; font-size:.9rem; margin-bottom:8px;
+    color:var(--text); cursor:pointer; font-family:inherit; transition:.15s;
+  }
+  .opt:active{ transform:scale(.98); }
+  .opt.correct{ background:#e8f5ee; border-color:#2e9e6b; color:var(--ok); font-weight:bold; }
+  .opt.wrong{ background:#fdecec; border-color:#e05b5b; color:var(--bad); }
+  .quiz-q .explain{ display:none; font-size:.85rem; background:#fff8e6; border-radius:10px; padding:10px 12px; color:#8a6100; line-height:1.6; }
+  .quiz-q.answered .explain{ display:block; }
+  .score-bar{
+    background:var(--card); border-radius:16px; padding:14px 16px; margin-bottom:14px;
+    box-shadow:0 2px 8px rgba(30,60,100,.08); display:none;
+  }
+  .score-bar.show{ display:block; }
+  .score-bar b{ color:var(--main-dark); font-size:1rem; }
+  /* ---------- Bottom Nav ---------- */
+  nav{
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+    width:100%; max-width:520px; background:#fff;
+    display:flex; justify-content:space-around; padding:8px 4px calc(8px + var(--safe-bottom));
+    border-top:1px solid #e3eaf2; z-index:20;
+  }
+  nav button{
+    background:none; border:none; font-family:inherit; font-size:.68rem; color:var(--muted);
+    display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; padding:4px 10px; border-radius:10px;
+    position:relative;
+  }
+  nav button .ico{ font-size:1.3rem; }
+  nav button.on{ color:var(--main); font-weight:bold; }
+  nav .lockmark{
+    position:absolute; top:-2px; right:2px; font-size:.7rem;
+  }
+  nav button.unlocked .lockmark{ display:none; }
+  /* ---------- Modal ---------- */
+  .modal-mask{
+    position:fixed; inset:0; background:rgba(20,40,70,.45); z-index:50;
+    display:none; align-items:center; justify-content:center; padding:24px;
+  }
+  .modal-mask.show{ display:flex; }
+  .modal{
+    background:#fff; border-radius:18px; padding:22px; max-width:340px; width:100%;
+    text-align:center; animation:pop .2s ease;
+  }
+  @keyframes pop{ from{ transform:scale(.9); opacity:0; } to{ transform:none; opacity:1; } }
+  .modal .m-ico{ font-size:2.2rem; }
+  .modal h3{ color:var(--main-dark); margin:8px 0 10px; }
+  .modal p{ font-size:.9rem; line-height:1.7; color:var(--muted); }
+  .modal .m-btns{ display:flex; gap:10px; margin-top:18px; }
+  .modal .m-btns button{
+    flex:1; padding:12px; border-radius:12px; border:none; font-family:inherit; font-size:.95rem; font-weight:bold; cursor:pointer;
+  }
+  .m-cancel{ background:#e8eef5; color:var(--muted); }
+  .m-ok{ background:var(--main); color:#fff; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="hero-emoji">🦴</span> 骨質不鬆懈，健康不鬆手！</h1>
+  <p>骨質疏鬆衛教 · 第 18 組 · 先閱讀、後測驗</p>
+</header>
+
+<main>
+  <!-- ========== 首頁 ========== -->
+  <section class="page active" id="page-home">
+    <div class="read-hint">
+      <span>📋 測驗規則：讀完<b>全部三個單元</b>並確認後，測驗才會開放</span>
+      <span class="read-dot" id="homeProgress">0 / 3</span>
+    </div>
+    <div class="card">
+      <span class="badge">關於本 App</span>
+      <p>骨質疏鬆症是現代人相當普遍的疾病。<b>鈣的流失</b>是造成骨質疏鬆的最大元凶，因此在預防保健上，鈣的攝取是當務之急——<b>越年輕開始越好，終其一生都應注意鈣的攝取。</b></p>
+    </div>
+    <div class="card">
+      <h2>👥 第 18 組成員</h2>
+      <ul>
+        <li>11520117 李沛穎</li>
+        <li>11520175 林昀融</li>
+        <li>11520178 顏祥育</li>
+      </ul>
+    </div>
+    <div class="card" id="sourcesCard">
+      <h2>📚 資料來源</h2>
+      <p style="font-size:.85rem; color:var(--muted); margin-bottom:10px;">本App內文以<b>前注法</b>（文內夾注：機構、年份）標註來源，以下清單以<b>後注法</b>（文末註）完整列出，點擊可開啟原文：</p>
+      <ol class="src-list">
+        <li>衛生福利部國民健康署（2022年10月20日）。預防骨鬆 骨骼健康「鈣」重要【新聞稿】。<a href="https://www.mohw.gov.tw/cp-5273-72024-1.html" target="_blank" rel="noopener">前往原文</a></li>
+        <li>衛生福利部國民健康署（2015年4月7日）。活力灌『鈣』 全民健康好骨氣【新聞稿】。<a href="https://www.mohw.gov.tw/cp-2643-20856-1.html" target="_blank" rel="noopener">前往原文</a></li>
+        <li>衛生福利部國民健康署（2025）。骨質疏鬆【主題專區】。<a href="https://www.hpa.gov.tw/Pages/List.aspx?nodeid=216" target="_blank" rel="noopener">前往原文</a></li>
+        <li>中華民國骨質疏鬆症學會（2019）。《台灣成人骨質疏鬆症防治之共識及指引》。中華民國骨質疏鬆症學會。</li>
+        <li>中國醫藥大學附設醫院（2026）。預防骨質疏鬆的飲食【衛教單張】。<a href="https://www.cmuh.org.tw/HealthEdus/Detail?no=4916" target="_blank" rel="noopener">前往原文</a></li>
+        <li>World Health Organization. (2020). <i>Physical activity</i> [Fact sheet]. <a href="https://www.who.int/news-room/fact-sheets/detail/physical-activity" target="_blank" rel="noopener">前往原文</a></li>
+      </ol>
+    </div>
+    <div class="card">
+      <h2>📱 如何安裝到手機</h2>
+      <ul>
+        <li><b>iPhone（Safari）：</b>點下方「分享」→ 加入主畫面</li>
+        <li><b>Android（Chrome）：</b>選單 → 「安裝應用程式 / 新增到主畫面」</li>
+      </ul>
+      <p style="margin-top:8px; font-size:.85rem; color:var(--muted);">安裝後就能像一般 App 一樣全螢幕開啟使用！</p>
+    </div>
+  </section>
+
+  <!-- ========== 認識骨鬆 ========== -->
+  <section class="page" id="page-know">
+    <div class="read-hint"><span>📖 正在閱讀：認識骨質疏鬆</span><span class="read-dot" id="dot-know">未完成</span></div>
+    <div class="card">
+      <span class="badge">症狀</span>
+      <h2>⚠️ 骨質疏鬆的症狀</h2>
+      <ul>
+        <li>初期：背部或腰部感覺<b>無力、疼痛</b> <span class="cite">（衛生福利部國民健康署，2025）</span></li>
+        <li>骨頭因疏鬆而<b>變薄、變脆弱</b>，容易造成骨折，特別是<b>前臂骨、股骨及脊椎骨</b> <span class="cite">（衛生福利部國民健康署，2025；中華民國骨質疏鬆症學會，2019）</span></li>
+        <li>其他可能症狀：背痛、身高下降、駝背等 <span class="cite">（衛生福利部國民健康署，2025）</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>🧩 危險因子</h2>
+      <div class="factor">
+        <div class="col bad">
+          <h3>不可控制</h3>
+          <ul>
+            <li>女性</li>
+            <li>年齡超過七十歲</li>
+            <li>已達更年期或停經</li>
+            <li>家庭成員有人患骨質疏鬆症</li>
+            <li>身材和體格特別矮小</li>
+          </ul>
+        </div>
+        <div class="col good">
+          <h3>可控制</h3>
+          <ul>
+            <li>鈣質攝取不足</li>
+            <li>吸菸、飲酒過量</li>
+            <li>缺乏運動</li>
+            <li>喝大量咖啡</li>
+          </ul>
+        </div>
+      </div>
+      <p style="font-size:.85rem; color:var(--muted);">⚠️ 停經婦女是骨質疏鬆的高危險群。</p>
+      <p class="cite">危險因子資料來源：不可控制因素（衛生福利部國民健康署，2025）；可控制因素（衛生福利部國民健康署，2015, 2022）；體重過輕（BMI＜18.5）亦為危險因子之一（中華民國骨質疏鬆症學會，2019）。</p>
+    </div>
+    <div class="card">
+      <h2>🔎 兩種類型</h2>
+      <div class="factor">
+        <div class="col warn">
+          <h3>原發性骨鬆</h3>
+          <p style="font-size:.85rem; line-height:1.7;">年紀大了骨質慢慢溜走了。<br>生活習慣不良：鈣質攝取不足、少日曬、抽菸、酗酒、咖啡成癮、缺乏運動者等。</p>
+        </div>
+        <div class="col bad">
+          <h3>續發性骨鬆</h3>
+          <p style="font-size:.85rem; line-height:1.7;">骨折高危險者：類風濕性關節炎、糖尿病、中風、帕金森氏症、癌症骨轉移等。<br>長期服用藥物也可能引起。</p>
+        </div>
+      </div>
+      <p class="cite">兩種類型之分類依據：中華民國骨質疏鬆症學會（2019）；長期服用藥物（如類固醇）者骨骼亦會變得脆弱（衛生福利部國民健康署，2025）。</p>
+    </div>
+    <div class="card" style="text-align:center; background:#f2f6fa;">
+      <p style="font-size:.9rem;">讀完這一頁了嗎？記得繼續看「⚠️ 影響」👉</p>
+    </div>
+  </section>
+
+  <!-- ========== 影響 ========== -->
+  <section class="page" id="page-risk">
+    <div class="read-hint"><span>📖 正在閱讀：骨鬆的影響</span><span class="read-dot" id="dot-risk">未完成</span></div>
+    <div class="card">
+      <h2>🩼 跌倒骨折的影響</h2>
+      <p>跌倒骨折後除了引發<b>急性疼痛</b>症狀外，可能導致<b>長期臥床、住院</b>等活動受限及<b>生活功能喪失</b>等情況，影響病人的生活品質，也<b>增加死亡風險</b>。</p>
+      <p class="cite">（衛生福利部國民健康署，2025）</p>
+    </div>
+    <div class="card">
+      <h2>👵 為什麼老年人更容易跌倒骨折？</h2>
+      <p>老年人飲食量減少、食慾減退、營養缺乏，鈣的攝入量就會減少；也因年長了，走路姿勢會改變。當身體的骨質密度減少，跌倒骨折的機會就變大了。</p>
+      <p class="cite">（衛生福利部國民健康署，2022）</p>
+    </div>
+    <div class="card">
+      <h2>🛁 預防跌倒</h2>
+      <p>老年人比較容易跌倒骨折，<b>浴室、廁所及樓梯</b>是較容易跌倒的地方，平時要特別留意防滑與照明。</p>
+      <p class="cite">維生素 D 可改善神經肌肉系統功能，進而降低跌倒的機率（中國醫藥大學附設醫院，2026）。</p>
+    </div>
+    <div class="card" style="text-align:center; background:#f2f6fa;">
+      <p style="font-size:.9rem;">讀完這一頁了嗎？記得繼續看「💪 預防」👉</p>
+    </div>
+  </section>
+
+  <!-- ========== 預防 ========== -->
+  <section class="page" id="page-prevent">
+    <div class="read-hint"><span>📖 正在閱讀：預防方法</span><span class="read-dot" id="dot-prevent">未完成</span></div>
+    <div class="step">
+      <div class="num">1</div>
+      <div class="body"><b>🥛 增加鈣質攝取</b><p>平時盡量攝取足夠鈣質，多喝牛奶及食用乳製品。</p><p class="cite">（衛生福利部國民健康署，2022）</p></div>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <div class="body"><b>🏃 持續適當的運動</b><p>可以防止骨質疏鬆、幫助睡眠、維持活力。規律運動訓練：每週至少運動 150 分鐘。<br><br>⚠️ 避免需要碰撞或快速移位的運動，以免摔倒。</p><p class="cite">建議從事荷重運動增進骨質（衛生福利部國民健康署，2015）；成人每週至少 150～300 分鐘中等強度身體活動（World Health Organization, 2020）。</p></div>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <div class="body"><b>☀️ 曬太陽</b><p>平時多曬太陽，促進鈣吸收。</p><p class="cite">（衛生福利部國民健康署，2015）</p></div>
+    </div>
+    <div class="step">
+      <div class="num">4</div>
+      <div class="body"><b>🥗 健康生活習慣</b><p>均衡飲食、採低鹽低脂飲食，避免食用過多的肉類及加工食品，不抽菸、不酗酒。</p><p class="cite">（衛生福利部國民健康署，2025；中國醫藥大學附設醫院，2026）</p></div>
+    </div>
+    <div class="card">
+      <h2>🍚 飲食小提醒</h2>
+      <ul>
+        <li>多喝牛奶及食用乳製品 <span class="cite">（衛生福利部國民健康署，2022）</span></li>
+        <li>避免食用過多的肉類及加工食品 <span class="cite">（中國醫藥大學附設醫院，2026）</span></li>
+        <li>採低鹽低脂飲食，避免過度攝取咖啡因 <span class="cite">（衛生福利部國民健康署，2015）</span></li>
+      </ul>
+    </div>
+    <div class="card" style="text-align:center; background:#f2f6fa;">
+      <p style="font-size:.9rem;">三個單元都讀完了！回到「📝 測驗」確認後開始作答 🎉</p>
+    </div>
+  </section>
+
+  <!-- ========== 測驗（鎖定畫面 + 測驗內容） ========== -->
+  <section class="page" id="page-quiz">
+    <!-- 鎖定畫面 -->
+    <div id="quizLock">
+      <div class="card lock-card">
+        <div class="lock-ico">🔒</div>
+        <h2>測驗尚未開放</h2>
+        <p style="font-size:.9rem; color:var(--muted);">請先完整閱讀以下三個衛教單元，並勾選確認後，才能開始測驗。</p>
+        <div class="checklist">
+          <div class="check-item" id="ck-know"><span>🦴</span><span>認識骨質疏鬆（症狀、危險因子、類型）</span><span class="st">未讀</span></div>
+          <div class="check-item" id="ck-risk"><span>⚠️</span><span>骨鬆的影響（骨折、跌倒風險）</span><span class="st">未讀</span></div>
+          <div class="check-item" id="ck-prevent"><span>💪</span><span>預防方法（補鈣、運動、曬太陽、習慣）</span><span class="st">未讀</span></div>
+        </div>
+        <label class="agree-row">
+          <input type="checkbox" id="agreeBox" disabled>
+          <span><b>我已完整閱讀並了解以上衛教內容</b>，願意開始進行測驗。</span>
+        </label>
+        <button class="btn-start" id="btnStart" disabled>📝 開始測驗</button>
+      </div>
+    </div>
+
+    <!-- 測驗內容 -->
+    <div id="quizBody" style="display:none;">
+      <div class="score-bar" id="scoreBar">
+        <p style="font-size:.9rem;">答對題數：<b id="scoreText">0 / 0</b></p>
+      </div>
+      <div id="quizArea"></div>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button class="on" data-page="home"><span class="ico">🏠</span>首頁</button>
+  <button data-page="know" id="nav-know"><span class="ico">🦴</span>認識骨鬆</button>
+  <button data-page="risk" id="nav-risk"><span class="ico">⚠️</span>影響</button>
+  <button data-page="prevent" id="nav-prevent"><span class="ico">💪</span>預防</button>
+  <button data-page="quiz" id="nav-quiz" class="has-lock"><span class="ico">🔒</span><span id="quizNavLabel">測驗</span></button>
+</nav>
+
+<!-- 解鎖確認視窗 -->
+<div class="modal-mask" id="modal">
+  <div class="modal">
+    <div class="m-ico">🔓</div>
+    <h3>確認開始測驗？</h3>
+    <p>你已閱讀完所有衛教單元並勾選確認。<br>測驗共 6 題，開始後即計分，確定要開始嗎？</p>
+    <div class="m-btns">
+      <button class="m-cancel" id="mCancel">再看看內容</button>
+      <button class="m-ok" id="mOk">開始測驗</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const CONTENT_PAGES = ["know", "risk", "prevent"];
+  const read = { know:false, risk:false, prevent:false };
+  let quizUnlocked = false;
+
+  /* ---------- 分頁切換 ---------- */
+  const btns = document.querySelectorAll('nav button');
+  btns.forEach(b => b.addEventListener('click', () => {
+    const target = b.dataset.page;
+    if (target === 'quiz' && !quizUnlocked) {
+      // 仍可進入測驗頁查看鎖定狀態與進度
+    }
+    btns.forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + target).classList.add('active');
+    window.scrollTo({ top: 0 });
+    if (CONTENT_PAGES.includes(target) && !read[target]) markRead(target);
+    if (target === 'quiz') renderLockState();
+  }));
+
+  /* ---------- 標記已讀 ---------- */
+  function markRead(key){
+    read[key] = true;
+    const dot = document.getElementById('dot-' + key);
+    dot.textContent = '✓ 已讀'; dot.classList.add('done');
+    const ck = document.getElementById('ck-' + key);
+    ck.classList.add('done');
+    ck.querySelector('.st').textContent = '✓ 已讀';
+    updateProgress();
+  }
+  function updateProgress(){
+    const n = CONTENT_PAGES.filter(k => read[k]).length;
+    document.getElementById('homeProgress').textContent = n + ' / 3';
+    const agree = document.getElementById('agreeBox');
+    const start = document.getElementById('btnStart');
+    if (n === 3){
+      agree.disabled = false;
+      if (!agree.checked) start.disabled = true;
+    } else {
+      agree.disabled = true;
+      agree.checked = false;
+      start.disabled = true;
+    }
+    refreshCheckState();
+  }
+  function refreshCheckState(){
+    const agree = document.getElementById('agreeBox');
+    document.getElementById('btnStart').disabled = !(CONTENT_PAGES.every(k => read[k]) && agree.checked);
+  }
+  document.getElementById('agreeBox').addEventListener('change', refreshCheckState);
+
+  /* ---------- 測驗鎖定畫面 ---------- */
+  function renderLockState(){
+    const n = CONTENT_PAGES.filter(k => read[k]).length;
+    if (n === 3 && !quizUnlocked){
+      // 內容都讀完了：解鎖畫面維持，等待勾選+按下開始
+    }
+    updateNavLock();
+  }
+  function updateNavLock(){
+    const navQuiz = document.getElementById('nav-quiz');
+    navQuiz.classList.toggle('unlocked', quizUnlocked);
+    navQuiz.querySelector('.ico').textContent = quizUnlocked ? '📝' : '🔒';
+  }
+
+  /* ---------- 開始測驗流程 ---------- */
+  document.getElementById('btnStart').addEventListener('click', () => {
+    document.getElementById('modal').classList.add('show');
+  });
+  document.getElementById('mCancel').addEventListener('click', () => {
+    document.getElementById('modal').classList.remove('show');
+  });
+  document.getElementById('mOk').addEventListener('click', () => {
+    document.getElementById('modal').classList.remove('show');
+    quizUnlocked = true;
+    updateNavLock();
+    document.getElementById('quizLock').style.display = 'none';
+    document.getElementById('quizBody').style.display = 'block';
+    window.scrollTo({ top: 0 });
+  });
+
+  /* ---------- 測驗 ---------- */
+  const quiz = [
+    { q:'骨質疏鬆可能會有哪些症狀？',
+      opts:['背痛、身高下降、駝背等','發燒、咳嗽','皮膚紅腫、搔癢'],
+      a:0, ex:'骨質疏鬆常見背痛、身高下降、駝背，初期背部或腰部會感覺無力、疼痛。' },
+    { q:'什麼原因容易引發骨質疏鬆？',
+      opts:['吃太多蔬菜水果','鈣攝取不足、缺乏運動、抽菸酗酒等生活習慣不良','睡太多'],
+      a:1, ex:'鈣攝取不足、缺乏運動，以及抽菸、酗酒等不良生活習慣，都是引發骨質疏鬆的原因。' },
+    { q:'骨質疏鬆對老年人可能存在什麼隱患？',
+      opts:['摔倒就容易骨折，容易全身痠痛','視力變好','跑得更快'],
+      a:0, ex:'骨質密度減少後，老年人摔倒就容易骨折，且容易全身痠痛，甚至長期臥床。' },
+    { q:'下列何者是預防骨質疏鬆的措施？',
+      opts:['少曬太陽','均衡飲食、適當運動、多曬太陽促進鈣吸收','多喝咖啡'],
+      a:1, ex:'均衡飲食、適當運動、多曬太陽促進鈣吸收，都是有效的預防方法。' },
+    { q:'日常飲食中該怎麼吃，才可以避免骨質疏鬆？',
+      opts:['多吃肉類及加工食品','高鹽高脂飲食','多喝牛奶及乳製品、低鹽低脂、少吃加工食品'],
+      a:2, ex:'多喝牛奶及食用乳製品、避免過多肉類及加工食品、採低鹽低脂飲食。' },
+    { q:'每週至少應運動多少分鐘？',
+      opts:['30 分鐘','150 分鐘','500 分鐘'],
+      a:1, ex:'規律運動訓練：每週至少運動 150 分鐘，並避免碰撞或快速移位的運動，以免摔倒。' }
+  ];
+
+  let answeredCount = 0, correctCount = 0;
+  const area = document.getElementById('quizArea');
+  quiz.forEach((item, qi) => {
+    const box = document.createElement('div');
+    box.className = 'quiz-q';
+    box.innerHTML = '<div class="q">Q' + (qi + 1) + '. ' + item.q + '</div>' +
+      item.opts.map((o, oi) => '<button class="opt" data-o="' + oi + '">' + o + '</button>').join('') +
+      '<div class="explain">💡 ' + item.ex + '</div>';
+    box.querySelectorAll('.opt').forEach(btn => btn.addEventListener('click', () => {
+      if (box.classList.contains('answered')) return;
+      box.classList.add('answered');
+      answeredCount++;
+      const pick = +btn.dataset.o;
+      if (pick === item.a) correctCount++;
+      box.querySelectorAll('.opt').forEach(b2 => {
+        const oi = +b2.dataset.o;
+        if (oi === item.a) b2.classList.add('correct');
+        else if (oi === pick) b2.classList.add('wrong');
+      });
+      document.getElementById('scoreBar').classList.add('show');
+      document.getElementById('scoreText').textContent = correctCount + ' / ' + quiz.length;
+      if (answeredCount === quiz.length){
+        document.getElementById('scoreBar').querySelector('p').innerHTML =
+          '🎉 測驗完成！答對 <b>' + correctCount + ' / ' + quiz.length + '</b> 題' +
+          (correctCount === quiz.length ? '，太棒了！' : '，記得看看答錯題目的解說喔！');
+      }
+    }));
+    area.appendChild(box);
+  });
+
+  updateProgress();
+  updateNavLock();
+</script>
+</body>
+</html>
